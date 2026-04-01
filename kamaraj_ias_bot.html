@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kamaraj IAS Academy — Enquiry Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0C10;
+  --surface:#0F1218;
+  --lift:#161B24;
+  --edge:#1E2530;
+  --accent:#4A6FA5;
+  --accent2:#6B94D4;
+  --gold:#C4933F;
+  --text:#E8EDF5;
+  --muted:rgba(232,237,245,0.5);
+  --faint:rgba(232,237,245,0.15);
+  --green:#4CAF7D;
+  --r:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+
+.header{background:var(--surface);border-bottom:1px solid var(--edge);padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#1C2E4A,var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:#fff;border:1px solid rgba(74,111,165,0.4)}
+.hinfo{flex:1}
+.hname{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;letter-spacing:.02em}
+.hsub{font-size:10px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.hstatus{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;margin-top:2px}
+.hdot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.lang-toggle{display:flex;background:var(--lift);border-radius:20px;overflow:hidden;border:1px solid var(--edge)}
+.lt-btn{padding:4px 11px;font-size:10px;font-weight:600;border:none;background:none;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;letter-spacing:.04em}
+.lt-btn.on{background:var(--accent);color:#fff}
+
+.prestige-bar{background:linear-gradient(90deg,rgba(74,111,165,0.15),rgba(196,147,63,0.1),rgba(74,111,165,0.15));border-bottom:1px solid var(--edge);padding:.5rem 1.25rem;display:flex;gap:2rem;overflow-x:auto}
+.pb-item{flex-shrink:0;text-align:center}
+.pb-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold)}
+.pb-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+
+.countdown-bar{background:var(--surface);border-bottom:1px solid var(--edge);padding:.5rem 1.25rem;display:flex;gap:1.5rem;overflow-x:auto}
+.cd-item{flex-shrink:0;text-align:center}
+.cd-label{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1px}
+.cd-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--accent2)}
+
+.chips-bar{padding:.6rem 1.25rem;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--edge)}
+.chip{flex-shrink:0;padding:4px 12px;border-radius:4px;border:1px solid var(--edge);background:none;font-size:11px;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;font-weight:500}
+.chip:hover{border-color:var(--accent);color:var(--text);background:rgba(74,111,165,0.1)}
+
+.messages{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:.85rem}
+.msg{max-width:80%;display:flex;flex-direction:column;gap:3px;animation:fu .25s ease}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{align-self:flex-start}
+.msg.user{align-self:flex-end}
+.bubble{padding:.8rem 1.1rem;border-radius:var(--r);font-size:13.5px;line-height:1.7}
+.bot .bubble{background:var(--lift);border:1px solid var(--edge);border-bottom-left-radius:3px}
+.user .bubble{background:var(--accent);color:#fff;border-bottom-right-radius:3px}
+.msg-time{font-size:10px;color:var(--faint);padding:0 3px}
+.bot .msg-time{align-self:flex-start}
+.user .msg-time{align-self:flex-end}
+.typing{display:flex;gap:4px;align-items:center;padding:.8rem 1rem;background:var(--lift);border:1px solid var(--edge);border-radius:var(--r);border-bottom-left-radius:3px;width:fit-content}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--accent2);animation:b .9s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+.info-card{background:var(--surface);border:1px solid var(--edge);border-radius:8px;padding:.85rem;margin-top:.5rem}
+.ic-title{font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em}
+.ic-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--edge);font-size:12px}
+.ic-row:last-child{border-bottom:none}
+.ic-key{color:var(--muted)}
+.ic-val{color:var(--text);font-weight:500;text-align:right;max-width:60%}
+.ic-hi{color:var(--gold);font-weight:600}
+
+.achievement-card{background:linear-gradient(135deg,rgba(74,111,165,0.1),rgba(196,147,63,0.08));border:1px solid rgba(74,111,165,0.3);border-radius:8px;padding:.85rem;margin-top:.5rem}
+.ac-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;border-bottom:1px solid rgba(74,111,165,0.15)}
+.ac-row:last-child{border-bottom:none}
+.ac-icon{font-size:14px;flex-shrink:0}
+.ac-text{color:var(--text);line-height:1.5}
+.ac-rank{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;color:var(--gold)}
+
+.psir-card{background:rgba(74,111,165,0.08);border:1px solid rgba(74,111,165,0.25);border-radius:8px;padding:.85rem;margin-top:.5rem}
+
+.emi-calc{background:var(--surface);border:1px solid var(--edge);border-radius:8px;padding:.75rem;margin-top:.5rem}
+.emi-select{width:100%;background:var(--lift);border:1px solid var(--edge);border-radius:6px;padding:.45rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;margin-bottom:.5rem;outline:none}
+.emi-result{background:var(--lift);border-radius:6px;padding:.6rem;text-align:center;font-size:14px;font-weight:600;color:var(--gold);font-family:'Cormorant Garamond',serif}
+
+.input-area{padding:.85rem 1.25rem;border-top:1px solid var(--edge);background:var(--surface);display:flex;gap:8px;align-items:flex-end}
+.text-input{flex:1;background:var(--lift);border:1px solid var(--edge);border-radius:8px;padding:.65rem 1rem;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:none;max-height:100px;transition:border-color .2s}
+.text-input:focus{border-color:var(--accent)}
+.text-input::placeholder{color:var(--faint)}
+.send-btn{width:40px;height:40px;border-radius:8px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.send-btn:hover{background:var(--accent2)}
+.send-btn svg{width:15px;height:15px;fill:#fff}
+.voice-btn{width:40px;height:40px;border-radius:8px;background:var(--lift);border:1px solid var(--edge);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.voice-btn.recording{background:rgba(74,111,165,0.3);border-color:var(--accent);animation:rp 1s infinite}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(74,111,165,0.4)}50%{box-shadow:0 0 0 8px rgba(74,111,165,0)}}
+.voice-btn svg{width:15px;height:15px;stroke:var(--muted);fill:none}
+.brand-footer{text-align:center;padding:.4rem;font-size:10px;color:var(--faint);border-top:1px solid var(--edge);letter-spacing:.06em}
+.brand-footer a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="avatar">K</div>
+  <div class="hinfo">
+    <div class="hname">Kamaraj IAS Academy</div>
+    <div class="hsub">Legacy of Bharat Ratna · Est. 2005</div>
+    <div class="hstatus"><span class="hdot"></span>Enquiry Assistant · Always Available</div>
+  </div>
+  <div class="lang-toggle">
+    <button class="lt-btn on" id="btn-ta" onclick="setLang('ta')">தமிழ்</button>
+    <button class="lt-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+
+<div class="prestige-bar">
+  <div class="pb-item"><div class="pb-val">AIR 7</div><div class="pb-label">Best Rank</div></div>
+  <div class="pb-item"><div class="pb-val">400+</div><div class="pb-label">IAS/IPS/IRS</div></div>
+  <div class="pb-item"><div class="pb-val">200+</div><div class="pb-label">TNPSC Officers</div></div>
+  <div class="pb-item"><div class="pb-val">4000+</div><div class="pb-label">Students</div></div>
+  <div class="pb-item"><div class="pb-val">18+</div><div class="pb-label">Years</div></div>
+  <div class="pb-item"><div class="pb-val">Only</div><div class="pb-label">PSIR South India</div></div>
+</div>
+
+<div class="countdown-bar" id="countdown-bar"></div>
+
+<div class="chips-bar" id="chips-bar"></div>
+
+<div class="messages" id="messages"></div>
+
+<div class="input-area">
+  <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+    <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+  </button>
+  <textarea class="text-input" id="textInput" placeholder="Ask about courses, fees, PSIR, IAAP..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+  <button class="send-btn" onclick="sendMessage()">
+    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+  </button>
+</div>
+<div class="brand-footer">Powered by <a href="https://orrven.app" target="_blank">Orrven</a> · AI Enquiry Infrastructure</div>
+
+<script>
+const DATA={
+  fees:{"GS + Optional (Full)":120000,"GS Only":85000,"TNPSC Group 1":40000,"TNPSC Group 2":28000,"Weekend Batch (GS)":95000,"Online Batch":75000},
+  hostel:"₹8,000/month (Male & Female separate hostels available)",
+  batches:{regular:"11 months — Regular (Mon–Sat)",weekend:"Sat & Sun — Working professionals",online:"Online live + recorded sessions"},
+  results:[{rank:"AIR 7",name:"Prabhu Shankar IAS",note:"Now Thiruvallur District Collector"},{rank:"AIR 34",name:"Divya Iyer IFS",note:"Indian Foreign Service"},{rank:"AIR 67",name:"Arjun Krishnan IPS",note:"Indian Police Service"},{rank:"200+ TNPSC",name:"Various officers",note:"Group 1 & 2 selections"}],
+  exams:[{name:"UPSC Prelims 2026",date:"2026-05-24"},{name:"UPSC Mains 2026",date:"2026-09-15"},{name:"TNPSC Group 2",date:"2026-04-12"}],
+  contact:"98403 94477",
+  email:"info@kamarajiasacademy.com",
+  address:"AP-127, AF Block, 6th Street, 11th Main Road, Anna Nagar, Chennai 600040",
+  instagram:"@kamarajiasacademy",
+  optionals:["Political Science & IR (PSIR) — Only specialist in South India","History","Public Administration","Tamil Literature","Geography","Sociology"],
+  psir:"Kamaraj IAS Academy is the ONLY coaching centre in South India specialising in Political Science & International Relations (PSIR) as optional subject. Faculty with 15+ years PSIR expertise. Dedicated PSIR batch. Highest success rate for PSIR optional.",
+  iaap:"IAAP — Individual Assessment & Attention Program — is our proprietary system where every student gets a personalised performance tracker, one-on-one mentoring sessions monthly, and a customised study plan. No two students follow the same path.",
+  scholarships:["Merit Scholarship — Previous exam rank holders: 20% fee waiver","Economic Scholarship — Annual income < ₹3L: 25% fee waiver","Defence/Ex-servicemen ward: 15% fee waiver","Women candidates (SC/ST): Additional 10% concession"],
+  competitors:{vajiram:"Vajiram & Redly is excellent for Delhi aspirants. Kamaraj IAS offers the same quality with a crucial advantage — our PSIR specialisation is unmatched in South India, and we integrate TNPSC preparation for those who want state service backup.",chanakya:"Chanakya IAS is a respected institution. Our IAAP system gives every student personalised attention that large-batch academies cannot offer. With 400+ IAS officers produced, our track record speaks.",brain:"Brain Tree focuses on UPSC broadly. Our PSIR optional coaching has produced multiple top 100 rankers — a specialisation no other South India academy offers."}
+};
+
+let lang='ta';
+let awaitingLead=false,leadStep=0,leadData={};
+let isRecording=false,recognition=null;
+
+const T={
+  ta:{
+    welcome:`வணக்கம்! 🙏\n\nகாமராஜர் IAS Academy-யில் உங்களை வரவேற்கிறோம்.\n\n18 வருடம். AIR 7. 400+ IAS/IPS அதிகாரிகள். தமிழ்நாட்டிலேயே ஒரே PSIR specialist.\n\nCoaching பத்தி என்ன தெரிஞ்சுக்கணும்?`,
+    chips:["📚 Courses & Fees","🏆 Results","🎯 PSIR Specialist","📊 IAAP Program","🎓 Scholarship","🏠 Hostel","📅 Batch Options","⏱ Exam Dates","📝 Counselling"],
+    leadName:"உங்கள் பெயர்?",
+    leadPhone:"Phone number?",
+    leadEmail:"Email? (optional)",
+    leadDone:"நன்றி. எங்கள் counsellor 24 மணி நேரத்தில் personally contact பண்றாங்க.\n\nDirect call: 98403 94477 🙏"
+  },
+  en:{
+    welcome:`Welcome to Kamaraj IAS Academy.\n\n18 years. AIR 7. 400+ IAS/IPS officers produced. The only PSIR specialist in South India.\n\nHow can I assist your preparation journey?`,
+    chips:["📚 Courses & Fees","🏆 Results","🎯 PSIR Specialist","📊 IAAP Program","🎓 Scholarship","🏠 Hostel","📅 Batch Options","⏱ Exam Dates","📝 Counselling"],
+    leadName:"Your name?",
+    leadPhone:"Phone number?",
+    leadEmail:"Email address? (optional)",
+    leadDone:"Thank you. Our counsellor will personally contact you within 24 hours.\n\nDirect call: 98403 94477 🙏"
+  }
+};
+
+function buildCountdown(){
+  const bar=document.getElementById('countdown-bar');
+  const now=new Date();
+  DATA.exams.forEach(e=>{
+    const diff=Math.floor((new Date(e.date)-now)/86400000);
+    if(diff<0) return;
+    const el=document.createElement('div');
+    el.className='cd-item';
+    el.innerHTML=`<div class="cd-label">${e.name}</div><div class="cd-val">${diff}d remaining</div>`;
+    bar.appendChild(el);
+  });
+}
+
+function buildChips(){
+  const bar=document.getElementById('chips-bar');
+  bar.innerHTML='';
+  T[lang].chips.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip';b.textContent=c;
+    b.onclick=()=>sendMessage(c);
+    bar.appendChild(b);
+  });
+}
+
+function time(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}
+
+function addMsg(text,type,html=''){
+  const msgs=document.getElementById('messages');
+  const div=document.createElement('div');
+  div.className=`msg ${type}`;
+  const bubble=document.createElement('div');
+  bubble.className='bubble';
+  if(html) bubble.innerHTML=html;
+  else bubble.innerHTML=text.replace(/\n/g,'<br>');
+  const t=document.createElement('div');
+  t.className='msg-time';t.textContent=time();
+  div.appendChild(bubble);div.appendChild(t);
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+
+function showTyping(){
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg bot';d.id='typing';
+  d.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+
+function emiCard(fee){
+  return `<div class="emi-calc">
+    <div class="ic-title" style="font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em">💰 EMI Options</div>
+    <select class="emi-select" id="emiM" onchange="calcEMI(${fee})">
+      <option value="3">3 months — ₹${Math.ceil(fee/3).toLocaleString('en-IN')}/mo</option>
+      <option value="6" selected>6 months — ₹${Math.ceil(fee/6).toLocaleString('en-IN')}/mo</option>
+      <option value="11">11 months — ₹${Math.ceil(fee/11).toLocaleString('en-IN')}/mo</option>
+    </select>
+    <div class="emi-result" id="emiR">₹${Math.ceil(fee/6).toLocaleString('en-IN')} per month</div>
+  </div>`;
+}
+function calcEMI(fee){const m=parseInt(document.getElementById('emiM')?.value||6);const r=document.getElementById('emiR');if(r)r.textContent='₹'+Math.ceil(fee/m).toLocaleString('en-IN')+' per month';}
+
+function getResponse(input){
+  const q=input.toLowerCase();
+  const isTa=lang==='ta';
+
+  if(q.includes('fee')||q.includes('cost')||q.includes('price')||q.includes('கட்டண')||q.includes('course')&&q.length<20){
+    return{text:isTa?'Course fee structure:':'Course fee structure:',
+      card:`<div class="info-card">
+        <div class="ic-title">Fee Structure 2025–26</div>
+        ${Object.entries(DATA.fees).map(([k,v])=>`<div class="ic-row"><span class="ic-key">${k}</span><span class="ic-val ic-hi">₹${v.toLocaleString('en-IN')}</span></div>`).join('')}
+        <div class="ic-row"><span class="ic-key">Hostel</span><span class="ic-val">${DATA.hostel}</span></div>
+      </div>${emiCard(120000)}`};
+  }
+
+  if(q.includes('result')||q.includes('rank')||q.includes('air')||q.includes('success')||q.includes('achievem')||q.includes('தேர்ச்சி')){
+    return{text:isTa?'எங்கள் மாணவர்களின் சாதனைகள் — every rank earned under one roof:':'Our students — selected officers across India:',
+      card:`<div class="achievement-card">
+        <div class="ic-title" style="color:var(--gold)">Hall of Excellence</div>
+        ${DATA.results.map(r=>`<div class="ac-row"><span class="ac-icon">🏅</span><div class="ac-text"><span class="ac-rank">${r.rank}</span> · ${r.name}<br><span style="color:var(--muted);font-size:11px">${r.note}</span></div></div>`).join('')}
+      </div>`};
+  }
+
+  if(q.includes('psir')||q.includes('political science')||q.includes('international relation')){
+    return{text:DATA.psir,
+      card:`<div class="psir-card">
+        <div class="ic-title" style="color:var(--accent2)">🎯 PSIR — Why Kamaraj IAS?</div>
+        <div class="ic-row" style="font-size:12px;border-bottom:1px solid rgba(74,111,165,0.15)"><span class="ic-key">Status</span><span class="ic-val" style="color:var(--gold)">Only South India PSIR Specialist</span></div>
+        <div class="ic-row" style="font-size:12px;border-bottom:1px solid rgba(74,111,165,0.15)"><span class="ic-key">Faculty exp.</span><span class="ic-val">15+ years PSIR exclusive</span></div>
+        <div class="ic-row" style="font-size:12px;border-bottom:1px solid rgba(74,111,165,0.15)"><span class="ic-key">Dedicated batch</span><span class="ic-val">Yes — PSIR-only batch</span></div>
+        <div class="ic-row" style="font-size:12px"><span class="ic-key">Success rate</span><span class="ic-val" style="color:var(--gold)">Highest in region</span></div>
+      </div>`};
+  }
+
+  if(q.includes('iaap')||q.includes('individual')||q.includes('personal')||q.includes('mentoring')){
+    return{text:DATA.iaap};
+  }
+
+  if(q.includes('batch')||q.includes('timing')||q.includes('schedule')||q.includes('நேரம்')){
+    return{text:isTa?'Available batch options:':'Available batch timings:',
+      card:`<div class="info-card">
+        <div class="ic-title">Batch Options</div>
+        <div class="ic-row"><span class="ic-key">Regular</span><span class="ic-val">${DATA.batches.regular}</span></div>
+        <div class="ic-row"><span class="ic-key">Weekend</span><span class="ic-val">${DATA.batches.weekend}</span></div>
+        <div class="ic-row"><span class="ic-key">Online</span><span class="ic-val">${DATA.batches.online}</span></div>
+        <div class="ic-row"><span class="ic-key">Duration</span><span class="ic-val">11 months full course</span></div>
+      </div>`};
+  }
+
+  if(q.includes('hostel')||q.includes('accom')||q.includes('stay')||q.includes('room')){
+    return{text:isTa?`Hostel விவரம்:\n${DATA.hostel}\n\n📍 Anna Nagar Chennai-ல் — Academy-க்கு walking distance.\nMale & Female separate. Food, security included.`:
+      `Hostel details:\n${DATA.hostel}\n\n📍 Anna Nagar, Chennai — Walking distance to academy.\nSeparate male & female hostels. Meals and security included.`};
+  }
+
+  if(q.includes('scholar')||q.includes('discount')||q.includes('உதவி')||q.includes('fee waiver')){
+    return{text:isTa?'Available scholarship schemes:':'Scholarship schemes:',
+      card:`<div class="info-card">
+        <div class="ic-title">🎓 Scholarship Schemes</div>
+        ${DATA.scholarships.map(s=>`<div class="ic-row"><span class="ic-val">✓ ${s}</span></div>`).join('')}
+      </div>`};
+  }
+
+  if(q.includes('optional')||q.includes('subject')){
+    return{text:isTa?'Available optional subjects:':'Optional subjects offered:',
+      card:`<div class="info-card">
+        <div class="ic-title">📚 Optional Subjects</div>
+        ${DATA.optionals.map(o=>`<div class="ic-row"><span class="ic-val">${o.includes('PSIR')?"🎯 "+o:"✓ "+o}</span></div>`).join('')}
+      </div>`};
+  }
+
+  if(q.includes('exam')||q.includes('date')||q.includes('prelim')||q.includes('mains')||q.includes('தேர்வு')){
+    return{text:isTa?'Upcoming exam dates:':'Key exam dates:',
+      card:`<div class="info-card">
+        <div class="ic-title">⏱ Exam Calendar 2026</div>
+        ${DATA.exams.map(e=>{const d=Math.floor((new Date(e.date)-new Date())/86400000);return`<div class="ic-row"><span class="ic-key">${e.name}</span><span class="ic-val ic-hi">${d>0?d+' days':new Date(e.date).toLocaleDateString()}</span></div>`}).join('')}
+      </div>`};
+  }
+
+  if(q.includes('register')||q.includes('join')||q.includes('counsell')||q.includes('admission')||q.includes('enrol')||q.includes('சேர')){
+    awaitingLead=true;leadStep=0;leadData={};
+    return{text:isTa?'உங்களுக்கு personalized counselling arrange பண்றோம்.  '+T[lang].leadName:
+      'We\'ll arrange a personalised counselling session for you. '+T[lang].leadName};
+  }
+
+  if(q.includes('emi')||q.includes('instal')||q.includes('monthly')||q.includes('மாதம்')){
+    return{text:isTa?'EMI options available for all courses:':'Flexible EMI options:',card:emiCard(120000)};
+  }
+
+  for(const[k,v] of Object.entries(DATA.competitors)){if(q.includes(k)) return{text:v};}
+
+  if(q.includes('location')||q.includes('address')||q.includes('where')||q.includes('எங்கே')){
+    return{text:isTa?`📍 ${DATA.address}\n\nAnna Nagar Chennai — Metro, bus எல்லாம் direct connection. Hostel available.\n📞 ${DATA.contact}`:
+      `📍 ${DATA.address}\n\nAnna Nagar, Chennai — Well connected by metro and bus. Hostel available.\n📞 ${DATA.contact}`};
+  }
+
+  return{text:isTa?`நன்றி. உங்கள் கேள்விக்கு நேரடியாக counsel பண்ண:\n📞 ${DATA.contact}\n📧 ${DATA.email}\n📱 Instagram: ${DATA.instagram}\n\nAdmissions for 2026–27 open now 🙏`:
+    `Thank you. For a direct counselling call:\n📞 ${DATA.contact}\n📧 ${DATA.email}\n📱 Instagram: ${DATA.instagram}\n\nAdmissions for 2026–27 are currently open 🙏`};
+}
+
+function handleLeadFlow(input){
+  if(leadStep===0){leadData.name=input;leadStep=1;return T[lang].leadPhone;}
+  if(leadStep===1){leadData.phone=input;leadStep=2;return T[lang].leadEmail;}
+  if(leadStep===2){leadData.email=input;awaitingLead=false;console.log('LEAD:',leadData);return T[lang].leadDone;}
+}
+
+function sendMessage(override){
+  const input=override||document.getElementById('textInput').value.trim();
+  if(!input) return;
+  document.getElementById('textInput').value='';
+  autoResize(document.getElementById('textInput'));
+  addMsg(input,'user');showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    if(awaitingLead){addMsg(handleLeadFlow(input),'bot');}
+    else{const r=getResponse(input);addMsg('','bot',r.text.replace(/\n/g,'<br>')+(r.card||''));}
+    setTimeout(()=>{const m=document.getElementById('emiM');if(m)calcEMI(120000);},100);
+  },600+Math.random()*500);
+}
+
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){addMsg('Voice input — please use Chrome browser.','bot');return;}
+  if(isRecording){recognition?.stop();return;}
+  recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
+  recognition.lang=lang==='ta'?'ta-IN':'en-IN';
+  recognition.onstart=()=>{isRecording=true;document.getElementById('voiceBtn').classList.add('recording');};
+  recognition.onresult=e=>{document.getElementById('textInput').value=e.results[0][0].transcript;};
+  recognition.onend=()=>{isRecording=false;document.getElementById('voiceBtn').classList.remove('recording');};
+  recognition.start();
+}
+
+function setLang(l){
+  lang=l;
+  document.getElementById('btn-ta').classList.toggle('on',l==='ta');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.getElementById('textInput').placeholder=l==='ta'?'Course, PSIR, IAAP பத்தி கேளுங்க...':'Ask about courses, PSIR, IAAP...';
+  buildChips();
+}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+buildCountdown();buildChips();
+setTimeout(()=>addMsg('','bot',T[lang].welcome.replace(/\n/g,'<br>')),500);
+</script>
+</body>
+</html>

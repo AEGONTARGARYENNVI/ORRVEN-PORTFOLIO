@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Global IAS Academy Madurai — Enquiry Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Tamil:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080E0C;
+  --surface: #0D1512;
+  --lift: #131E1A;
+  --edge: #1E2E28;
+  --accent: #1D7A5E;
+  --accent2: #25A67A;
+  --gold: #C4933F;
+  --text: #E4F0EB;
+  --muted: rgba(228,240,235,0.5);
+  --faint: rgba(228,240,235,0.15);
+  --red: #E05555;
+  --r: 10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.header{background:var(--surface);border-bottom:1px solid var(--edge);padding:.9rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0F4A38);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;font-family:'IBM Plex Sans',sans-serif}
+.hinfo{flex:1}
+.hname{font-size:14px;font-weight:600}
+.hsub{font-size:10px;color:var(--muted);}
+.hstatus{font-size:11px;color:#4CAF7D;display:flex;align-items:center;gap:4px}
+.hdot{width:5px;height:5px;border-radius:50%;background:#4CAF7D;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.lang-toggle{display:flex;background:var(--lift);border-radius:20px;overflow:hidden;border:1px solid var(--edge)}
+.lt-btn{padding:4px 10px;font-size:10px;font-weight:600;border:none;background:none;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'IBM Plex Sans',sans-serif;letter-spacing:.04em}
+.lt-btn.on{background:var(--accent);color:#fff}
+
+/* BRANCHES BAR */
+.branches{background:var(--surface);border-bottom:1px solid var(--edge);padding:.5rem 1rem;display:flex;gap:8px;overflow-x:auto}
+.br-chip{flex-shrink:0;padding:3px 10px;border-radius:12px;border:1px solid var(--edge);font-size:10px;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.03em}
+.br-chip.active{background:rgba(29,122,94,0.2);border-color:var(--accent);color:var(--accent2)}
+
+.countdown-bar{background:var(--lift);border-bottom:1px solid var(--edge);padding:.5rem 1.25rem;display:flex;gap:1.5rem;overflow-x:auto}
+.cd-item{flex-shrink:0;text-align:center}
+.cd-label{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1px}
+.cd-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--accent2)}
+
+.course-tabs{padding:.6rem 1rem;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--edge)}
+.ct-btn{flex-shrink:0;padding:4px 12px;border-radius:4px;border:1px solid var(--edge);background:none;font-size:11px;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'IBM Plex Sans',sans-serif;font-weight:500}
+.ct-btn.on{background:rgba(29,122,94,0.2);border-color:var(--accent);color:var(--accent2)}
+
+.messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem}
+.msg{max-width:82%;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{align-self:flex-start}
+.msg.user{align-self:flex-end}
+.bubble{padding:.7rem 1rem;border-radius:var(--r);font-size:13px;line-height:1.7}
+.bot .bubble{background:var(--lift);border:1px solid var(--edge);border-bottom-left-radius:3px}
+.user .bubble{background:var(--accent);color:#fff;border-bottom-right-radius:3px}
+.msg-time{font-size:10px;color:var(--faint);padding:0 3px;margin-top:2px}
+.bot .msg-time{align-self:flex-start}
+.user .msg-time{align-self:flex-end}
+.msg{display:flex;flex-direction:column;gap:2px}
+.typing{display:flex;gap:4px;align-items:center;padding:.7rem 1rem;background:var(--lift);border:1px solid var(--edge);border-radius:var(--r);border-bottom-left-radius:3px;width:fit-content}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--accent2);animation:b .9s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+.info-card{background:var(--surface);border:1px solid var(--edge);border-radius:8px;padding:.75rem;margin-top:.4rem;font-size:12px}
+.ic-title{font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.07em}
+.ic-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--edge)}
+.ic-row:last-child{border-bottom:none}
+.ic-key{color:var(--muted)}
+.ic-val{color:var(--text);font-weight:500}
+.ic-hi{color:var(--accent2);font-weight:600}
+
+.course-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:.4rem}
+.cg-item{background:var(--surface);border:1px solid var(--edge);border-radius:6px;padding:.5rem .7rem;cursor:pointer;transition:border-color .15s}
+.cg-item:hover{border-color:var(--accent)}
+.cg-name{font-size:12px;font-weight:600;color:var(--text)}
+.cg-fee{font-size:11px;color:var(--accent2);margin-top:2px}
+.cg-dur{font-size:10px;color:var(--muted)}
+
+.lead-form{background:var(--surface);border:1px solid var(--accent);border-radius:10px;padding:1rem;margin-top:.5rem}
+.lf-title{font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:.75rem}
+.lf-input{width:100%;background:var(--lift);border:1px solid var(--edge);border-radius:6px;padding:.5rem .75rem;font-size:13px;color:var(--text);font-family:'IBM Plex Sans',sans-serif;margin-bottom:.5rem;outline:none;transition:border-color .2s}
+.lf-input:focus{border-color:var(--accent)}
+.lf-btn{width:100%;background:var(--accent);border:none;border-radius:6px;padding:.6rem;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:background .2s}
+.lf-btn:hover{background:var(--accent2)}
+
+.emi-calc{background:var(--surface);border:1px solid var(--edge);border-radius:10px;padding:.75rem;margin-top:.4rem}
+.emi-select{width:100%;background:var(--lift);border:1px solid var(--edge);border-radius:6px;padding:.45rem;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:12px;margin-bottom:.5rem;outline:none}
+.emi-result{background:var(--lift);border-radius:6px;padding:.6rem;text-align:center;font-size:14px;font-weight:600;color:var(--accent2)}
+
+.input-area{padding:.75rem 1rem;border-top:1px solid var(--edge);background:var(--surface);display:flex;gap:8px;align-items:flex-end}
+.text-input{flex:1;background:var(--lift);border:1px solid var(--edge);border-radius:8px;padding:.6rem .9rem;font-size:13px;color:var(--text);font-family:'IBM Plex Sans',sans-serif;outline:none;resize:none;max-height:100px;transition:border-color .2s}
+.text-input:focus{border-color:var(--accent)}
+.text-input::placeholder{color:var(--faint)}
+.send-btn{width:38px;height:38px;border-radius:8px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.send-btn:hover{background:var(--accent2)}
+.send-btn svg{width:15px;height:15px;fill:#fff}
+.voice-btn{width:38px;height:38px;border-radius:8px;background:var(--lift);border:1px solid var(--edge);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.voice-btn.recording{background:rgba(29,122,94,0.3);border-color:var(--accent);animation:rp 1s infinite}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(29,122,94,0.4)}50%{box-shadow:0 0 0 6px rgba(29,122,94,0)}}
+.voice-btn svg{width:15px;height:15px;stroke:var(--muted);fill:none}
+.brand-footer{text-align:center;padding:.4rem;font-size:10px;color:var(--faint);border-top:1px solid var(--edge);letter-spacing:.06em}
+.brand-footer a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="avatar">G</div>
+  <div class="hinfo">
+    <div class="hname">Global IAS Academy Madurai</div>
+    <div class="hsub">Red Crescent Foundation · 8 Branches</div>
+    <div class="hstatus"><span class="hdot"></span>24/7 Enquiry Assistant</div>
+  </div>
+  <div class="lang-toggle">
+    <button class="lt-btn on" id="btn-ta" onclick="setLang('ta')">தமிழ்</button>
+    <button class="lt-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+
+<div class="branches" id="branches-bar"></div>
+<div class="countdown-bar" id="countdown-bar"></div>
+
+<div class="messages" id="messages"></div>
+
+<div class="input-area">
+  <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+    <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+  </button>
+  <textarea class="text-input" id="textInput" placeholder="UPSC, NEET, MRB — எந்த course வேணும்?" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+  <button class="send-btn" onclick="sendMessage()">
+    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+  </button>
+</div>
+<div class="brand-footer">Powered by <a href="https://orrven.app" target="_blank">Orrven</a> · AI Enquiry Infrastructure</div>
+
+<script>
+const DATA = {
+  branches: ["Goripalayam (Main)","Tallakulam","KK Nagar","Anna Nagar","Villapuram","Palanganatham","Thiruppalai","Sholavandan"],
+  courses: {
+    "UPSC": {fee:80000, dur:"12 months", exam:"Civil Services", batches:["Morning 7-10AM","Evening 5-8PM"]},
+    "TNPSC": {fee:25000, dur:"6 months", exam:"Group 1/2/4", batches:["Morning","Evening","Weekend"]},
+    "NEET": {fee:45000, dur:"11 months", exam:"NEET UG 2026", batches:["Day Batch","Evening Batch"]},
+    "JEE": {fee:50000, dur:"11 months", exam:"JEE Main/Advanced", batches:["Day Batch"]},
+    "Banking": {fee:15000, dur:"4 months", exam:"IBPS/SBI/RRB", batches:["Morning","Evening"]},
+    "MRB": {fee:20000, dur:"4 months", exam:"Staff Nurse/Physio/Pharmacist", batches:["Morning","Evening"]},
+    "SSC/RRB": {fee:12000, dur:"3 months", exam:"SSC CGL/CHSL/RRB NTPC", batches:["Evening"]},
+    "TRB": {fee:18000, dur:"4 months", exam:"TRB PG/Poly/BEd", batches:["Morning","Evening"]}
+  },
+  exams: [
+    {name:"UPSC Prelims 2026",date:"2026-05-24"},
+    {name:"TNPSC Group 2",date:"2026-04-12"},
+    {name:"NEET UG 2026",date:"2026-05-04"},
+    {name:"TN MRB Nurse",date:"2026-06-15"}
+  ],
+  contact:"09659392525",
+  email:"globaliasacademymadurai@gmail.com",
+  address:"18A, Ponnalagu Mahal, Alwarpuram, Goripalayam, Madurai 625002",
+  scholarships:["Merit Scholarship — Top 10 rank holders: 20% fee waiver","Economic Scholarship (Red Crescent Foundation) — Income < ₹3L: 25% fee waiver","Defence Ward — 10% fee waiver","Minority Scholarship — 15% fee waiver (Govt. scheme)"],
+  competitors:{"shankar":"Shankar IAS is a respected academy. Global IAS Madurai offers the same quality with 8 local branches, so you never need to travel far. Plus our Red Crescent Foundation scholarships make it more affordable.","vetrii":"Vetrii IAS has good faculty. Our advantage at Global IAS is the breadth — UPSC, NEET, Banking, MRB, all under one foundation. One institution for your entire family's needs.","raja":"Raja IAS focuses on TNPSC. We offer all competitive exams including MRB nursing and TRB teacher recruitment which are in high demand right now."}
+};
+
+let lang = 'ta';
+let awaitingLead=false,leadStep=0,leadData={};
+let isRecording=false,recognition=null;
+let activeCourse=null;
+
+const T = {
+  ta: {
+    welcome:`வணக்கம்! 🙏\n\nநான் Global IAS Academy Madurai-யின் AI உதவியாளர். UPSC, TNPSC, NEET, JEE, Banking, MRB — எல்லா courses பத்தியும் தகவல் சொல்வேன்.\n\nஉங்களுக்கு எந்த course பத்தி தெரிஞ்சுக்கணும்?`,
+    chips:["📚 All Courses","💰 UPSC Fee","🏥 NEET/JEE","🏦 Banking/MRB","📅 Batch Times","🎓 Scholarship","📍 Branches","📝 Enquire Now","⏱ Exam Dates"],
+    leadName:"உங்கள் பெயர் சொல்லுங்க:",
+    leadPhone:"Phone number?",
+    leadEmail:"Email address? (optional)",
+    leadCourse:"எந்த course-ல interest?",
+    leadDone:"நன்றி! எங்கள் team 24 மணி நேரத்தில் contact பண்றாங்க. Direct call: 09659392525 🙏"
+  },
+  en: {
+    welcome:`Welcome! 🙏\n\nI'm the enquiry assistant for Global IAS Academy Madurai. We cover UPSC, TNPSC, NEET, JEE, Banking, MRB and more — 8 branches across Madurai.\n\nWhich course are you interested in?`,
+    chips:["📚 All Courses","💰 UPSC Fee","🏥 NEET/JEE","🏦 Banking/MRB","📅 Batch Times","🎓 Scholarship","📍 Branches","📝 Enquire Now","⏱ Exam Dates"],
+    leadName:"Your name please:",
+    leadPhone:"Phone number?",
+    leadEmail:"Email address? (optional)",
+    leadCourse:"Which course are you interested in?",
+    leadDone:"Thank you! Our team will contact you within 24 hours. Direct call: 09659392525 🙏"
+  }
+};
+
+function buildBranches(){
+  const bar=document.getElementById('branches-bar');
+  const label=document.createElement('span');
+  label.style.cssText='font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:3px 0;flex-shrink:0;align-self:center;margin-right:4px';
+  label.textContent='Branches:';
+  bar.appendChild(label);
+  DATA.branches.forEach((b,i)=>{
+    const chip=document.createElement('div');
+    chip.className='br-chip'+(i===0?' active':'');
+    chip.textContent=b;
+    chip.onclick=()=>{
+      document.querySelectorAll('.br-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      const t=lang==='ta'?`${b} branch-ல admit ஆக 09659392525-ல call பண்ணுங்க. இந்த branch-ல எல்லா courses available.`:`For ${b} branch admissions, call 09659392525. All courses available at this branch.`;
+      addMsg(t,'bot');
+    };
+    bar.appendChild(chip);
+  });
+}
+
+function buildCountdown(){
+  const bar=document.getElementById('countdown-bar');
+  const now=new Date();
+  DATA.exams.forEach(e=>{
+    const diff=Math.floor((new Date(e.date)-now)/86400000);
+    if(diff<0) return;
+    const el=document.createElement('div');
+    el.className='cd-item';
+    el.innerHTML=`<div class="cd-label">${e.name}</div><div class="cd-val">${diff}d left</div>`;
+    bar.appendChild(el);
+  });
+}
+
+function time(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}
+
+function addMsg(text,type,html=''){
+  const msgs=document.getElementById('messages');
+  const div=document.createElement('div');
+  div.className=`msg ${type}`;
+  const bubble=document.createElement('div');
+  bubble.className='bubble';
+  if(html) bubble.innerHTML=html;
+  else bubble.innerHTML=text.replace(/\n/g,'<br>');
+  const t=document.createElement('div');
+  t.className='msg-time';
+  t.textContent=time();
+  div.appendChild(bubble);
+  div.appendChild(t);
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function showTyping(){
+  const msgs=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg bot';d.id='typing';
+  d.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+
+function allCoursesCard(){
+  const grid=document.createElement('div');
+  grid.className='course-grid';
+  Object.entries(DATA.courses).forEach(([k,v])=>{
+    const item=document.createElement('div');
+    item.className='cg-item';
+    item.innerHTML=`<div class="cg-name">${k}</div><div class="cg-fee">₹${v.fee.toLocaleString('en-IN')}</div><div class="cg-dur">${v.dur}</div>`;
+    item.onclick=()=>sendMessage(k+' course details');
+    grid.appendChild(item);
+  });
+  return grid.outerHTML;
+}
+
+function emiCard(fee){
+  return `<div class="emi-calc">
+    <div class="ic-title" style="font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">💰 EMI Options</div>
+    <select class="emi-select" id="emiM" onchange="calcEMI(${fee})">
+      <option value="3">3 months</option>
+      <option value="6" selected>6 months</option>
+      <option value="12">12 months</option>
+    </select>
+    <div class="emi-result" id="emiR">₹${Math.ceil(fee/6).toLocaleString('en-IN')} / month</div>
+  </div>`;
+}
+function calcEMI(fee){const m=parseInt(document.getElementById('emiM')?.value||6);const r=document.getElementById('emiR');if(r)r.textContent='₹'+Math.ceil(fee/m).toLocaleString('en-IN')+' / month';}
+
+function getResponse(input){
+  const q=input.toLowerCase();
+  const isTa=lang==='ta';
+
+  // All courses
+  if(q.includes('all course')||q.includes('எல்லா')||q.includes('list')||(q.includes('course')&&q.length<15)){
+    return{text:isTa?'இங்கே available courses:':'Available courses at Global IAS Academy:',card:allCoursesCard()};
+  }
+
+  // Individual course lookup
+  for(const [name,info] of Object.entries(DATA.courses)){
+    if(q.includes(name.toLowerCase())||q.includes(name.toLowerCase().split('/')[0])){
+      activeCourse=name;
+      return{text:isTa?`${name} course விவரம்:`:`${name} course details:`,
+        card:`<div class="info-card">
+          <div class="ic-title">${name} — Full Details</div>
+          <div class="ic-row"><span class="ic-key">Fee</span><span class="ic-val ic-hi">₹${info.fee.toLocaleString('en-IN')}</span></div>
+          <div class="ic-row"><span class="ic-key">Duration</span><span class="ic-val">${info.dur}</span></div>
+          <div class="ic-row"><span class="ic-key">Target Exam</span><span class="ic-val">${info.exam}</span></div>
+          ${info.batches.map(b=>`<div class="ic-row"><span class="ic-key">Batch</span><span class="ic-val">${b}</span></div>`).join('')}
+        </div>${emiCard(info.fee)}`};
+    }
+  }
+
+  // Fee generic
+  if(q.includes('fee')||q.includes('கட்டண')||q.includes('cost')||q.includes('price')){
+    return{text:isTa?'எல்லா courses fee structure:':'Fee structure for all courses:',card:allCoursesCard()};
+  }
+
+  // Scholarship
+  if(q.includes('scholar')||q.includes('discount')||q.includes('உதவி')||q.includes('concession')){
+    return{text:isTa?'Red Crescent Foundation scholarship schemes:':'Our scholarship schemes:',
+      card:`<div class="info-card">
+        <div class="ic-title">🎓 Scholarship Schemes</div>
+        ${DATA.scholarships.map(s=>`<div class="ic-row"><span class="ic-val">✓ ${s}</span></div>`).join('')}
+        <div class="ic-row"><span class="ic-key">Apply</span><span class="ic-val">09659392525</span></div>
+      </div>`};
+  }
+
+  // Branch
+  if(q.includes('branch')||q.includes('location')||q.includes('address')||q.includes('எங்கே')||q.includes('where')){
+    return{text:isTa?'Madurai-ல எங்கள் 8 branches:':'Our 8 branches across Madurai:',
+      card:`<div class="info-card">
+        <div class="ic-title">📍 All Branches</div>
+        ${DATA.branches.map((b,i)=>`<div class="ic-row"><span class="ic-val">${i+1}. ${b}</span></div>`).join('')}
+        <div class="ic-row"><span class="ic-key">Main Office</span><span class="ic-val">Goripalayam — ${DATA.address}</span></div>
+      </div>`};
+  }
+
+  // Exam dates
+  if(q.includes('exam')||q.includes('date')||q.includes('notification')||q.includes('தேர்வு')){
+    return{text:isTa?'முக்கிய தேர்வு தேதிகள் 2026:':'Upcoming exam dates 2026:',
+      card:`<div class="info-card">
+        <div class="ic-title">⏱ Exam Calendar</div>
+        ${DATA.exams.map(e=>{const d=Math.floor((new Date(e.date)-new Date())/86400000);return`<div class="ic-row"><span class="ic-key">${e.name}</span><span class="ic-val ic-hi">${d>0?d+' days':new Date(e.date).toLocaleDateString()}</span></div>`}).join('')}
+      </div>`};
+  }
+
+  // Register/lead
+  if(q.includes('register')||q.includes('join')||q.includes('enrol')||q.includes('சேர')||q.includes('admission')||q.includes('enquir')){
+    awaitingLead=true;leadStep=0;leadData={};
+    return{text:T[lang].leadName};
+  }
+
+  // Competitor
+  for(const[k,v] of Object.entries(DATA.competitors)){if(q.includes(k)) return{text:v};}
+
+  // Contact
+  if(q.includes('contact')||q.includes('call')||q.includes('phone')||q.includes('number')){
+    return{text:isTa?`📞 09659392525 / 9677656415\n📧 globaliasacademymadurai@gmail.com\n📍 18A, Ponnalagu Mahal, Goripalayam, Madurai 625002\n\nSaturday and Sunday-லயும் open!`:`📞 09659392525 / 9677656415\n📧 globaliasacademymadurai@gmail.com\n📍 18A, Ponnalagu Mahal, Goripalayam, Madurai 625002\n\nOpen on weekends too!`};
+  }
+
+  return{text:isTa?`புரிஞ்சுக்கிட்டேன். நேரடியா call பண்ணுங்க:\n📞 09659392525\n\nAll courses, all branches — எல்லாத்துக்கும் உதவுவாங்க 🙏`:`Understood. Please call us directly:\n📞 09659392525\n\nOur team handles all courses and branches 🙏`};
+}
+
+function handleLeadFlow(input){
+  if(leadStep===0){leadData.name=input;leadStep=1;return T[lang].leadPhone;}
+  if(leadStep===1){leadData.phone=input;leadStep=2;return T[lang].leadEmail;}
+  if(leadStep===2){leadData.email=input;leadStep=3;return T[lang].leadCourse;}
+  if(leadStep===3){leadData.course=input;awaitingLead=false;console.log('LEAD:',leadData);return T[lang].leadDone;}
+}
+
+function sendMessage(override){
+  const input=override||document.getElementById('textInput').value.trim();
+  if(!input) return;
+  document.getElementById('textInput').value='';
+  autoResize(document.getElementById('textInput'));
+  addMsg(input,'user');
+  showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    if(awaitingLead){addMsg(handleLeadFlow(input),'bot');}
+    else{const r=getResponse(input);addMsg(r.text,'bot',r.text.replace(/\n/g,'<br>')+(r.card||''));}
+    setTimeout(()=>{const m=document.getElementById('emiM');if(m&&activeCourse)calcEMI(DATA.courses[activeCourse]?.fee||0);},100);
+  },500+Math.random()*400);
+}
+
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){addMsg('Voice input-க்கு Chrome browser use பண்ணுங்க.','bot');return;}
+  if(isRecording){recognition?.stop();return;}
+  recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition)();
+  recognition.lang=lang==='ta'?'ta-IN':'en-IN';
+  recognition.onstart=()=>{isRecording=true;document.getElementById('voiceBtn').classList.add('recording');};
+  recognition.onresult=e=>{document.getElementById('textInput').value=e.results[0][0].transcript;};
+  recognition.onend=()=>{isRecording=false;document.getElementById('voiceBtn').classList.remove('recording');};
+  recognition.start();
+}
+
+function setLang(l){
+  lang=l;
+  document.getElementById('btn-ta').classList.toggle('on',l==='ta');
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.getElementById('textInput').placeholder=l==='ta'?'UPSC, NEET, MRB — எந்த course வேணும்?':'Which course are you interested in?';
+  buildChips();
+}
+
+function buildChips(){
+  let bar=document.getElementById('chips-bar');
+  if(!bar){bar=document.createElement('div');bar.id='chips-bar';bar.style.cssText='padding:.6rem 1rem;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--edge)';document.querySelector('.messages').before(bar);}
+  bar.innerHTML='';
+  T[lang].chips.forEach(c=>{const b=document.createElement('button');b.style.cssText='flex-shrink:0;padding:4px 12px;border-radius:16px;border:1px solid var(--edge);background:var(--lift);font-size:11px;color:var(--muted);cursor:pointer;transition:all .2s;font-family:"IBM Plex Sans",sans-serif;font-weight:500';b.textContent=c;b.onmouseover=()=>{b.style.borderColor='var(--accent)';b.style.color='var(--text)'};b.onmouseout=()=>{b.style.borderColor='var(--edge)';b.style.color='var(--muted)'};b.onclick=()=>sendMessage(c);bar.appendChild(b);});
+}
+
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+buildBranches();buildCountdown();buildChips();
+setTimeout(()=>addMsg('','bot',T[lang].welcome.replace(/\n/g,'<br>')),500);
+</script>
+</body>
+</html>
